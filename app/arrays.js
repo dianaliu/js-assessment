@@ -3,7 +3,9 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(function() {
   return {
     indexOf : function(arr, item) {
-        for(var i = 0; i < arr.length; i++) {
+        // Could cache arr.length, but difference is ms.
+        for(var i = 0, len = arr.length; i < len; i++) {
+        // for(var i = 0; i < arr.length; i++) {
             if(arr[i] == item) {
                 return i;
             }
@@ -52,21 +54,28 @@ define(function() {
     },
 
     concat : function(arr1, arr2) {
-        for(var i = 0; i < arr2.length; i++) {
-            arr1.push(arr2[i]);
-        }
+        // There is array.concat!!!
+        return arr1.concat(arr2);
 
-        return arr1;
+        // for(var i = 0; i < arr2.length; i++) {
+        //     arr1.push(arr2[i]);
+        // }
+
+        // return arr1;
     },
 
     insert : function(arr, item, index) {
-        for(var i = arr.length; i > index; i--) {
-            arr[i] = arr[i-1];
-        }
-
-        arr[index] = item;
-
+        // Use arr.splice -__-
+        arr.splice(index, 0, item)
         return arr;
+
+        // for(var i = arr.length; i > index; i--) {
+        //     arr[i] = arr[i-1];
+        // }
+
+        // arr[index] = item;
+
+        // return arr;
     },
 
     count : function(arr, item) {
@@ -98,6 +107,8 @@ define(function() {
 
         // Return items that have occured > 1 time
         for(var key in count) {
+            // Can check that count[key exists] with count.hasOwnProperty(key)
+            // ...but undefined > 1 = false
             if(count[key] > 1) {
                 dupes.push(parseInt(key, 10));
             }
@@ -107,18 +118,23 @@ define(function() {
     },
 
     square : function(arr) {
+        // Shouldn't modify original array, instead make copy.
+
+        var squares = []
+
         for(var i = 0; i < arr.length; i++) {
-            arr[i] = Math.pow(arr[i], 2);
+            squares[i] = Math.pow(arr[i], 2);
         }
 
-        return arr;
+        return squares;
     },
 
     findAllOccurrences : function(arr, target) {
         var indices = [];
 
+        // === is more accurate, checks type as well.
         for(var i = 0; i < arr.length; i++) {
-            if(target == arr[i]) {
+            if(target === arr[i]) {
                 indices.push(i);
             }
         }
