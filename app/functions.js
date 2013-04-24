@@ -3,11 +3,14 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(function() {
   return {
     argsAsArray : function(fn, arr) {
-        return fn.apply(this, arr);
+        // Context should be null, to be more accurate.
+        return fn.apply(null, arr);
     },
 
     speak : function(fn, obj) {
-        return fn.apply(obj);
+        // Call works here too.
+        return fn.call(obj);
+        // return fn.apply(obj);
     },
 
     functionFunction : function(str) {
@@ -33,6 +36,7 @@ define(function() {
 
     partial : function(fn, str1, str2) {
         return function(str3) {
+            // Is it important to use call to define context?
             return fn(str1, str2, str3);
         };
     },
@@ -48,8 +52,8 @@ define(function() {
     },
 
     callIt : function(fn) {
-        arguments = Array.prototype.slice.call(arguments);
-        arguments.splice(0,1);
+        // All in one step!
+        var arguments = Array.prototype.slice.call(arguments, 1);
         fn.apply(this, arguments)
     },
 
@@ -68,17 +72,22 @@ define(function() {
     },
 
     curryIt : function(fn) {
-        // Performing a function step by step
-        // One argument at a time.
-        // var ret = fn.apply(this, arguments);
+        var callFn = function(fn, arguments) {
+            return fn.apply(null, arguments);
+        }
 
-        // for(var i = 0; i < fn.length; i++) {
-        //     ret = function(arguments[i]) {
-        //         return ret(val);
-        //     }
-        // }
+        var collectArgs = function(args, count) {
+            return function(arg) {
+                args.push(arg);
+                if(args.length == count) {
+                    return callFn(fn, args);
+                } else {
+                    return collectArgs(args, count);
+                }
+            }
+        }
 
-        // return ret;
+        return collectArgs([], fn.length);
     }
   };
 });
